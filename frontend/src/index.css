@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F7F7F2;
+    color: #1C2421;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom scrollbar for editorial light theme */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D0D3CB;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5C6662;
+}
+
+/* Monospace font utility for cryptographic hashes and addresses */
+.font-mono-code {
+  font-family: 'Fira Code', monospace;
+}
