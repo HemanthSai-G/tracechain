@@ -63,36 +63,45 @@ class BlockchainVerifier:
         self,
         original_content: ContentPayload,
         tampered_field: str = "text_caption",
-        tamper_value: str = " [MODIFIED BY TAMPER SIMULATION]"
+        tamper_value: str = " [MUTATED BY TAMPER TEST]"
     ) -> TamperTestResponse:
         """
         Perform a controlled tamper simulation:
-        Modifies content text, recalculates SHA-256 fingerprint, and demonstrates that the altered hash
-        fails verification against the original registered on-chain fingerprint.
+        Modifies content text by a single character, recalculates SHA-256 fingerprint, and demonstrates
+        that the altered hash fails verification against the original registered on-chain fingerprint.
         """
-        # Step 1: Calculate original fingerprint
+        # Step 1: Calculate original fingerprint (matches Stage 3 fingerprint)
         orig_fp_res = generate_fingerprint(original_content)
         orig_fp = orig_fp_res.bytes32_hex
 
-        # Step 2: Modify content by appending/altering a character
+        # Step 2: Modify content by exactly 1 character or single suffix mutation
         tampered_dict = original_content.model_dump()
-        current_val = tampered_dict.get(tampered_field, "")
-        tampered_dict[tampered_field] = str(current_val) + tamper_value
-        
+        current_val = str(tampered_dict.get(tampered_field, ""))
+        if current_val:
+            tampered_dict[tampered_field] = current_val + "s" if not current_val.endswith("s") else current_val + "!"
+        else:
+            tampered_dict[tampered_field] = "Altered evidence caption!"
+
         tampered_content = ContentPayload(**tampered_dict)
-        
-        # Step 3: Calculate tampered fingerprint
+
+        # Step 3: Calculate tampered fingerprint (recomputed canonical JSON + SHA-256)
         tamp_fp_res = generate_fingerprint(tampered_content)
         tamp_fp = tamp_fp_res.bytes32_hex
 
-        # Step 4: Verify against on-chain record (which stores original fingerprint)
+        # Step 4: Retrieve registered on-chain fingerprint from EVM smart contract
         exists, onchain_rec = contract_manager.get_onchain_record(orig_fp)
         onchain_fp = onchain_rec.get("fingerprint") if exists and onchain_rec else orig_fp
+
+        orig_verified = (orig_fp.lower() == onchain_fp.lower())
+        tamp_verified = (tamp_fp.lower() == onchain_fp.lower())
 
         return TamperTestResponse(
             tamper_detected=True,
             original_fingerprint=orig_fp,
             tampered_fingerprint=tamp_fp,
+            on_chain_fingerprint=onchain_fp,
+            original_verified=orig_verified,
+            tampered_verified=tamp_verified,
             original_content=original_content,
             tampered_content=tampered_content,
             verification_status="❌ VERIFICATION FAILED",

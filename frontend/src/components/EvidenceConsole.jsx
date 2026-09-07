@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ExternalLink, Copy, Check, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { ExternalLink, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import TamperTest from './TamperTest';
 
 export default function EvidenceConsole({
   searchData,
@@ -203,59 +204,13 @@ export default function EvidenceConsole({
         </div>
       )}
 
-      {/* 05 TAMPER SIMULATION DEMO */}
-      {verifyData?.verified && (
-        <div className="space-y-3 border-t border-borderNeutral pt-4">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono font-semibold text-forest uppercase tracking-wider">
-              FORENSIC TAMPER TEST
-            </span>
-            <button
-              onClick={onRunTamperTest}
-              disabled={isLoading}
-              className="inline-flex items-center space-x-1 border border-accentFailure text-accentFailure hover:bg-accentFailure hover:text-paper font-mono text-[10px] px-2.5 py-1 uppercase tracking-wider transition-colors disabled:opacity-50"
-            >
-              <AlertTriangle className="w-3 h-3" />
-              <span>RUN TAMPER TEST</span>
-            </button>
-          </div>
-
-          {tamperData && (
-            <div className="border border-accentFailure/40 bg-paper p-3 space-y-2 font-mono text-[11px]">
-              <div className="flex justify-between text-accentFailure font-semibold">
-                <span>✕ VERIFICATION FAILED</span>
-                <span>1-Char Mutation</span>
-              </div>
-
-              <div className="space-y-1 text-[10px]">
-                <div className="truncate">
-                  <span className="text-charcoal-muted mr-1">Original:</span>
-                  <span className="text-charcoal">{tamperData.original_caption}</span>
-                </div>
-                <div className="truncate">
-                  <span className="text-accentFailure mr-1">Tampered:</span>
-                  <span className="text-accentFailure font-semibold">{tamperData.tampered_caption}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-1 text-[9px] pt-1 border-t border-borderNeutral">
-                <div>
-                  <span className="text-charcoal-muted block">MODIFIED HASH</span>
-                  <span className="font-mono-code text-accentFailure truncate block" title={tamperData.tampered_hash}>
-                    {tamperData.tampered_hash}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-forest block">ON-CHAIN HASH</span>
-                  <span className="font-mono-code text-forest truncate block" title={tamperData.onchain_registered_hash}>
-                    {tamperData.onchain_registered_hash}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {/* 05 FORENSIC TAMPER TEST */}
+      <TamperTest
+        tamperData={tamperData}
+        onRunTamperTest={onRunTamperTest}
+        isLoading={isLoading}
+        canRun={!!verifyData?.verified}
+      />
     </div>
   );
 }

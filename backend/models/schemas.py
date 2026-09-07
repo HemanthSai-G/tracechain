@@ -174,6 +174,9 @@ class TamperTestResponse(BaseModel):
     tamper_detected: bool
     original_fingerprint: str
     tampered_fingerprint: str
+    on_chain_fingerprint: str
+    original_verified: bool = True
+    tampered_verified: bool = False
     original_content: ContentPayload
     tampered_content: ContentPayload
     verification_status: str
