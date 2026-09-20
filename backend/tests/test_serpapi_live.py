@@ -38,7 +38,7 @@ def test_serpapi_authoritative_flow():
     
     # 3. Call Google Lens via SerpApi using image_id
     lens_url = f"https://serpapi.com/search.json?engine=google_lens&image_id={image_id}&type=visual_matches&api_key={settings.SERPAPI_KEY}"
-    lens_resp = requests.get(lens_url, timeout=15)
+    lens_resp = requests.get(lens_url, timeout=25)
     assert lens_resp.status_code == 200, f"Google Lens request failed with status {lens_resp.status_code}"
     
     lens_json = lens_resp.json()
